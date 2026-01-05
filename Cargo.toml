@@ -1,0 +1,9 @@
+[package]
+name = "neo64fetch"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+colored = "3.0.0"
+display-info = "0.5.7"
+sysinfo = "0.37.2"
