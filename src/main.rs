@@ -2,7 +2,6 @@
 // neo64fetch - "jarvis, rewrite this project in rust"
 
 // use colored::*;
-use display_info::DisplayInfo;
 use std::env;
 use sysinfo::System;
 mod helpers;
@@ -19,8 +18,15 @@ struct Stats {
     packages: String,
     shell: String,
     display: String,
+    desktop_env: String,
+    window_manager: String,
+    window_manager_theme: String,
+    font: String,
+    cursor: String,
+    terminal: String,
+    terminal_font: String,
 
-    // Extra fields which are usually appended
+    // Extra fields
     architecture: String,
 }
 
@@ -41,8 +47,16 @@ fn main() {
         packages: helpers::packages::get_brew_info(),
         shell: helpers::shell::get_shell_info(),
         display: helpers::display::get_display_info(),
+        desktop_env: helpers::desktop_env::get_desktop_env_info(),
+        window_manager: helpers::wm::get_window_manager_info().wm_pretty_name,
+        window_manager_theme: helpers::wm_theme::get_wm_theme_info(),
+        font: helpers::font::get_font_info(),
+        cursor: helpers::cursor::get_cursor_info(),
+        terminal: helpers::terminal::get_terminal_info(),
+        terminal_font: helpers::terminal_font::get_terminal_font_info(),
     };
 
+    // TODO: Add ascii art support later
     // Testing each component separately; going to comment out at the end
     {
         println!("{}", stats.username);
@@ -55,5 +69,12 @@ fn main() {
         println!("{}", stats.packages);
         println!("{}", stats.shell);
         println!("{}", stats.display);
+        println!("{}", stats.desktop_env);
+        println!("{}", stats.window_manager);
+        println!("{}", stats.window_manager_theme);
+        println!("{}", stats.font);
+        println!("{}", stats.cursor);
+        println!("{}", stats.terminal);
+        println!("{}", stats.terminal_font);
     }
 }

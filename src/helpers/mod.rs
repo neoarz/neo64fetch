@@ -1,4 +1,11 @@
+pub mod cursor;
+pub mod desktop_env;
 pub mod display;
+pub mod font;
 pub mod packages;
 pub mod shell;
+pub mod terminal;
+pub mod terminal_font;
 pub mod uptime;
+pub mod wm;
+pub mod wm_theme;
