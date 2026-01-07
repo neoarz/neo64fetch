@@ -1,9 +1,17 @@
+pub mod battery;
+pub mod cpu;
 pub mod cursor;
 pub mod desktop_env;
 pub mod display;
 pub mod font;
+pub mod gpu;
+pub mod ip;
+pub mod locale;
+pub mod memory;
 pub mod packages;
 pub mod shell;
+pub mod storage;
+pub mod swap;
 pub mod terminal;
 pub mod terminal_font;
 pub mod uptime;

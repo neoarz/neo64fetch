@@ -25,6 +25,14 @@ struct Stats {
     cursor: String,
     terminal: String,
     terminal_font: String,
+    cpu: String,
+    gpu: String,
+    memory: String,
+    swap: String,
+    storage: String,
+    ip: String,
+    battery: String,
+    locale: String,
 
     // Extra fields
     architecture: String,
@@ -54,6 +62,14 @@ fn main() {
         cursor: helpers::cursor::get_cursor_info(),
         terminal: helpers::terminal::get_terminal_info(),
         terminal_font: helpers::terminal_font::get_terminal_font_info(),
+        cpu: helpers::cpu::get_cpu_info(),
+        gpu: helpers::gpu::get_gpu_info(),
+        memory: helpers::memory::get_memory_info(),
+        swap: helpers::swap::get_swap_info(),
+        storage: helpers::storage::get_storage_info(),
+        ip: helpers::ip::get_ip_info(),
+        battery: helpers::battery::get_battery_info(),
+        locale: helpers::locale::get_locale_info(),
     };
 
     // TODO: Add ascii art support later
@@ -76,5 +92,13 @@ fn main() {
         println!("{}", stats.cursor);
         println!("{}", stats.terminal);
         println!("{}", stats.terminal_font);
+        println!("{}", stats.cpu);
+        println!("{}", stats.gpu);
+        println!("{}", stats.memory);
+        println!("{}", stats.swap);
+        println!("{}", stats.storage);
+        println!("{}", stats.ip);
+        println!("{}", stats.battery);
+        println!("{}", stats.locale);
     }
 }
