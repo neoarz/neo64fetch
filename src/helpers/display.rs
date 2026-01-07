@@ -23,7 +23,7 @@ pub fn get_display_info() -> String {
         };
 
         format!(
-            "Display ({}): {}x{} @ {}x in {}\", {} Hz {}",
+            "({}): {}x{} @ {}x in {}\", {} Hz {}",
             name, p_width, p_height, main.scale_factor as u32, inches, main.frequency as u32, tag
         )
     } else {

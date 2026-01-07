@@ -75,7 +75,7 @@ pub fn get_battery_info() -> String {
         status.push_str("Discharging");
     }
 
-    let mut result = format!("({}) {}%", device_name, percentage);
+    let mut result = format!("({}) {}", device_name, crate::output::colors::battery_percent(percentage));
 
     if !external_connected && !is_charging {
         if let Some(time_mins) = avg_time_to_empty {

@@ -78,8 +78,8 @@ pub fn get_storage_info() -> String {
                 let read_only = (fs.f_flags & MNT_RDONLY) != 0;
 
                 let mut result = format!(
-                    "{:.2} GiB / {:.2} GiB ({:.0}%)",
-                    used_gib, total_gib, percentage
+                    "{:.2} GiB / {:.2} GiB ({})",
+                    used_gib, total_gib, crate::output::colors::percent(percentage)
                 );
 
                 if !filesystem.is_empty() {

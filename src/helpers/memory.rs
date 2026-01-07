@@ -73,7 +73,7 @@ pub fn get_memory_info() -> String {
     };
 
     format!(
-        "{:.2} GiB / {:.2} GiB ({:.0}%)",
-        used_gib, total_gib, percentage
+        "{:.2} GiB / {:.2} GiB ({})",
+        used_gib, total_gib, crate::output::colors::percent(percentage)
     )
 }

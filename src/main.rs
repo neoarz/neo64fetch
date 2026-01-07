@@ -1,10 +1,13 @@
 // neoarz
 // neo64fetch - "jarvis, rewrite this project in rust"
 
-// use colored::*;
 use std::env;
 use sysinfo::System;
+
 mod helpers;
+mod output;
+
+use output::colors;
 
 struct Stats {
     // Neoarz[at]Mac
@@ -72,33 +75,37 @@ fn main() {
         locale: helpers::locale::get_locale_info(),
     };
 
-    // TODO: Add ascii art support later
-    // Testing each component separately; going to comment out at the end
-    {
-        println!("{}", stats.username);
-        println!("{}", stats.hostname);
-        println!("{}", stats.os);
-        println!("{}", stats.host);
-        println!("{}", stats.architecture);
-        println!("{}", stats.kernel);
-        println!("{}", stats.uptime);
-        println!("{}", stats.packages);
-        println!("{}", stats.shell);
-        println!("{}", stats.display);
-        println!("{}", stats.desktop_env);
-        println!("{}", stats.window_manager);
-        println!("{}", stats.window_manager_theme);
-        println!("{}", stats.font);
-        println!("{}", stats.cursor);
-        println!("{}", stats.terminal);
-        println!("{}", stats.terminal_font);
-        println!("{}", stats.cpu);
-        println!("{}", stats.gpu);
-        println!("{}", stats.memory);
-        println!("{}", stats.swap);
-        println!("{}", stats.storage);
-        println!("{}", stats.ip);
-        println!("{}", stats.battery);
-        println!("{}", stats.locale);
-    }
+    // user@host
+    println!("{}", colors::title(&stats.username, &stats.hostname));
+
+    // separator
+    println!("{}", colors::separator(stats.username.len() + stats.hostname.len() + 1));
+
+    // info
+    println!("{}", colors::info("OS", &format!("{} {}", stats.os, stats.architecture)));
+    println!("{}", colors::info("Host", &stats.host));
+    println!("{}", colors::info("Kernel", &stats.kernel));
+    println!("{}", colors::info("Uptime", &stats.uptime));
+    println!("{}", colors::info("Packages", &stats.packages));
+    println!("{}", colors::info("Shell", &stats.shell));
+    println!("{}", colors::info("Display", &stats.display));
+    println!("{}", colors::info("DE", &stats.desktop_env));
+    println!("{}", colors::info("WM", &stats.window_manager));
+    println!("{}", colors::info("WM Theme", &stats.window_manager_theme));
+    println!("{}", colors::info("Font", &stats.font));
+    println!("{}", colors::info("Cursor", &stats.cursor));
+    println!("{}", colors::info("Terminal", &stats.terminal));
+    println!("{}", colors::info("Terminal Font", &stats.terminal_font));
+    println!("{}", colors::info("CPU", &stats.cpu));
+    println!("{}", colors::info("GPU", &stats.gpu));
+    println!("{}", colors::info("Memory", &stats.memory));
+    println!("{}", colors::info("Swap", &stats.swap));
+    println!("{}", colors::info("Disk (/)", &stats.storage));
+    println!("{}", colors::info("Local IP", &stats.ip));
+    println!("{}", colors::info("Battery", &stats.battery));
+    println!("{}", colors::info("Locale", &stats.locale));
+
+    // color blocks
+    println!();
+    println!("{}", colors::color_blocks());
 }
