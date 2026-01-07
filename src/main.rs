@@ -34,7 +34,7 @@ struct Stats {
     swap: String,
     storage: String,
     ip: String,
-    battery: String,
+    battery: (String, String), // (device_name, info)
     locale: String,
 
     // Extra fields
@@ -108,7 +108,7 @@ fn main() {
     println!("{}", colors::info("Disk (/)", &stats.storage));
     // Don't wanna show print this lolol
     // println!("{}", colors::info("Local IP", &stats.ip));
-    println!("{}", colors::info("Battery", &stats.battery));
+    println!("{}", colors::info(&format!("Battery {}", stats.battery.0), &stats.battery.1));
     println!("{}", colors::info("Locale", &stats.locale));
 
     // color blocks

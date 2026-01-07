@@ -1,13 +1,13 @@
 use std::process::Command;
 
-pub fn get_battery_info() -> String {
+pub fn get_battery_info() -> (String, String) {
     let output = Command::new("ioreg")
         .args(["-l", "-w0", "-r", "-c", "AppleSmartBattery"])
         .output();
 
     let stdout = match output {
         Ok(out) => String::from_utf8_lossy(&out.stdout).to_string(),
-        Err(_) => return "<unknown>".to_string(),
+        Err(_) => return ("".to_string(), "<unknown>".to_string()),
     };
 
     let mut device_name = "Built-in".to_string();
@@ -60,22 +60,21 @@ pub fn get_battery_info() -> String {
         if capacity >= 0 && capacity <= 100 {
             capacity as u32
         } else {
-            return "<unknown>".to_string();
+            return (format!("({})", device_name), "<unknown>".to_string());
         }
     } else {
-        return "<unknown>".to_string();
+        return (format!("({})", device_name), "<unknown>".to_string());
     };
 
-    let mut status = String::new();
-    if external_connected {
-        status.push_str("AC connected");
+    let status = if external_connected {
+        "AC connected"
     } else if is_charging {
-        status.push_str("Charging");
+        "Charging"
     } else {
-        status.push_str("Discharging");
-    }
+        "Discharging"
+    };
 
-    let mut result = format!("({}) {}", device_name, crate::output::colors::battery_percent(percentage));
+    let mut result = crate::output::colors::battery_percent(percentage);
 
     if !external_connected && !is_charging {
         if let Some(time_mins) = avg_time_to_empty {
@@ -96,5 +95,6 @@ pub fn get_battery_info() -> String {
 
     result.push_str(&format!(" [{}]", status));
 
-    result
+    (format!("({})", device_name), result)
 }
+
