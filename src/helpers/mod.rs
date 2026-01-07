@@ -5,6 +5,7 @@ pub mod desktop_env;
 pub mod display;
 pub mod font;
 pub mod gpu;
+pub mod host;
 pub mod ip;
 pub mod locale;
 pub mod memory;

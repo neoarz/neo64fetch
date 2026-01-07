@@ -47,11 +47,16 @@ fn main() {
 
     let stats = Stats {
         hostname: System::host_name().unwrap_or_else(|| "<unknown>".to_owned()),
+        // This would be the real username of the system but I just want to print out Neoarz for my case
+        // Uncoment the line below to use the real username
+        /*
         username: env::var("USER")
             .or_else(|_| env::var("USERNAME"))
             .unwrap_or_else(|_| "<unknown>".to_owned()),
+        */
+        username: "Neoarz".to_owned(),
         os: System::long_os_version().unwrap_or_else(|| "<unknown>".to_owned()),
-        host: System::name().unwrap_or_else(|| "<unknown>".to_owned()),
+        host: helpers::host::get_host_info(),
         architecture: System::cpu_arch(),
         kernel: System::kernel_long_version(),
         uptime: helpers::uptime::get_uptime(System::uptime()),
@@ -101,7 +106,8 @@ fn main() {
     println!("{}", colors::info("Memory", &stats.memory));
     println!("{}", colors::info("Swap", &stats.swap));
     println!("{}", colors::info("Disk (/)", &stats.storage));
-    println!("{}", colors::info("Local IP", &stats.ip));
+    // Don't wanna show print this lolol
+    // println!("{}", colors::info("Local IP", &stats.ip));
     println!("{}", colors::info("Battery", &stats.battery));
     println!("{}", colors::info("Locale", &stats.locale));
 
