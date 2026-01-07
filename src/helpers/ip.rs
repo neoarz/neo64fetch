@@ -44,7 +44,7 @@ pub fn get_ip_info() -> String {
                         }
                     }
 
-                    return format!("Local IP ({}): {}", interface, ip_with_cidr);
+                    return format!("({}) {}", interface, ip_with_cidr);
                 }
             }
         }
