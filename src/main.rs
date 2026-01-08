@@ -7,7 +7,7 @@ use sysinfo::System;
 mod helpers;
 mod output;
 
-use output::colors;
+use output::{colors, image};
 
 struct Stats {
     // Neoarz[at]Mac
@@ -38,14 +38,15 @@ struct Stats {
     locale: String,
 
     // Extra fields
-    architecture: String,
+    architecture: String, // appended to os
 }
 
-fn main() {
+
+fn get_system_stats() -> Stats {
     let mut sys = System::new_all();
     sys.refresh_all();
 
-    let stats = Stats {
+    Stats {
         hostname: System::host_name().unwrap_or_else(|| "<unknown>".to_owned()),
         // This would be the real username of the system but I just want to print out Neoarz for my case
         // Uncoment the line below to use the real username
@@ -78,40 +79,60 @@ fn main() {
         ip: helpers::ip::get_ip_info(),
         battery: helpers::battery::get_battery_info(),
         locale: helpers::locale::get_locale_info(),
-    };
+    }
+}
+
+
+fn print_stats(stats: &Stats, offset: usize) {
+    let mut lines = Vec::new();
 
     // user@host
-    println!("{}", colors::title(&stats.username, &stats.hostname));
+    lines.push(colors::title(&stats.username, &stats.hostname));
 
     // separator
-    println!("{}", colors::separator(stats.username.len() + stats.hostname.len() + 1));
+    lines.push(colors::separator(stats.username.len() + stats.hostname.len() + 1));
 
     // info
-    println!("{}", colors::info("OS", &format!("{} {}", stats.os, stats.architecture)));
-    println!("{}", colors::info("Host", &stats.host));
-    println!("{}", colors::info("Kernel", &stats.kernel));
-    println!("{}", colors::info("Uptime", &stats.uptime));
-    println!("{}", colors::info("Packages", &stats.packages));
-    println!("{}", colors::info("Shell", &stats.shell));
-    println!("{}", colors::info("Display", &stats.display));
-    println!("{}", colors::info("DE", &stats.desktop_env));
-    println!("{}", colors::info("WM", &stats.window_manager));
-    println!("{}", colors::info("WM Theme", &stats.window_manager_theme));
-    println!("{}", colors::info("Font", &stats.font));
-    println!("{}", colors::info("Cursor", &stats.cursor));
-    println!("{}", colors::info("Terminal", &stats.terminal));
-    println!("{}", colors::info("Terminal Font", &stats.terminal_font));
-    println!("{}", colors::info("CPU", &stats.cpu));
-    println!("{}", colors::info("GPU", &stats.gpu));
-    println!("{}", colors::info("Memory", &stats.memory));
-    println!("{}", colors::info("Swap", &stats.swap));
-    println!("{}", colors::info("Disk (/)", &stats.storage));
-    // Don't wanna show print this lolol
-    // println!("{}", colors::info("Local IP", &stats.ip));
-    println!("{}", colors::info(&format!("Battery {}", stats.battery.0), &stats.battery.1));
-    println!("{}", colors::info("Locale", &stats.locale));
+    lines.push(colors::info("OS", &format!("{} {}", stats.os, stats.architecture)));
+    lines.push(colors::info("Host", &stats.host));
+    lines.push(colors::info("Kernel", &stats.kernel));
+    lines.push(colors::info("Uptime", &stats.uptime));
+    lines.push(colors::info("Packages", &stats.packages));
+    lines.push(colors::info("Shell", &stats.shell));
+    lines.push(colors::info("Display", &stats.display));
+    // lines.push(colors::info("DE", &stats.desktop_env));
+    // lines.push(colors::info("WM", &stats.window_manager));
+    // lines.push(colors::info("WM Theme", &stats.window_manager_theme));
+    lines.push(colors::info("Font", &stats.font));
+    lines.push(colors::info("Cursor", &stats.cursor));
+    lines.push(colors::info("Terminal", &stats.terminal));
+    lines.push(colors::info("Terminal Font", &stats.terminal_font));
+    lines.push(colors::info("CPU", &stats.cpu));
+    lines.push(colors::info("GPU", &stats.gpu));
+    lines.push(colors::info("Memory", &stats.memory));
+    lines.push(colors::info("Swap", &stats.swap));
+    lines.push(colors::info("Disk (/)", &stats.storage));
+    // lines.push(colors::info("Local IP", &stats.ip));
+    lines.push(colors::info(&format!("Battery {}", stats.battery.0), &stats.battery.1));
+    // lines.push(colors::info("Locale", &stats.locale));
 
     // color blocks
-    println!();
-    println!("{}", colors::color_blocks());
+    lines.push(String::new());
+    for line in colors::color_blocks().lines() {
+        lines.push(line.to_string());
+    }
+
+    for line in lines {
+        image::offset_println!(offset, "{}", line);
+    }
+}
+
+
+
+fn main() {
+    let stats = get_system_stats();                                                         
+    let (offset, img_rows) = image::print_image_and_setup("assets/logo.png", 700);
+    //                                                                       ^^^ size of the image change it here                  
+    print_stats(&stats, offset);
+    image::finish_printing(offset, 24, img_rows);
 }

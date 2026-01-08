@@ -45,7 +45,6 @@ fn model_to_name(model: &str) -> Option<String> {
             "15,10" => "MacBook Pro (14-inch, M3 Max, 2023)",
             "15,8" => "MacBook Pro (14-inch, M3 Pro, 2023)",
             "15,6" | "15,7" => "MacBook Pro (16-inch, M2 Max, 2023)",
-            "15,4" | "15,5" => "MacBook Pro (16-inch, M2 Pro, 2023)",
             "15,3" => "MacBook Pro (14-inch, M2 Max, 2023)",
             "14,10" | "14,6" => "MacBook Pro (16-inch, M2 Pro/Max, 2023)",
             "14,9" | "14,5" => "MacBook Pro (14-inch, M2 Pro/Max, 2023)",
