@@ -139,7 +139,8 @@ pub fn print_image_and_setup(path: &str, target_height: u32) -> (usize, usize) {
     let (char_w, char_h) = terminal_cell_metrics();
     let cols = ((width as f32 / char_w).ceil() as usize).max(1) + DEFAULT_GAP_COLUMNS;
     let rows = ((height as f32 / char_h).ceil() as usize).max(1);
-    let padding_top = 0; 
+    let padding_top = 0;
+    let caption_rows = 1;
     let total_rows = rows + padding_top;
 
     for _ in 0..total_rows {
@@ -159,6 +160,15 @@ pub fn print_image_and_setup(path: &str, target_height: u32) -> (usize, usize) {
     print!("{}", output); 
     std::io::stdout().flush().ok();
 
+    // just a silly caption lolol
+    let image_width_cols = cols - DEFAULT_GAP_COLUMNS;
+    
+    let text = "a creeper made this";
+    let text_len = 16;
+    let pad = if image_width_cols > text_len { (image_width_cols - text_len) / 2 } else { 0 };
+    print!("\x1b[{}B", rows);
+    print!("\r\x1b[{}C{}", pad, text); 
+
     print!("\x1b[u"); 
     
     if padding_top > 0 {
@@ -166,7 +176,7 @@ pub fn print_image_and_setup(path: &str, target_height: u32) -> (usize, usize) {
     }
     std::io::stdout().flush().ok();
 
-    (cols, total_rows)
+    (cols, total_rows + caption_rows)
 }
 
 // Prints text at a horizontal offset for side-by-side layout with image. 

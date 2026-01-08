@@ -1,16 +1,13 @@
 use colored::Colorize;
 
-// title
 pub fn title(user: &str, host: &str) -> String {
     format!("{}@{}", user.cyan().bold(), host.cyan().bold())
 }
 
-// separator
 pub fn separator(len: usize) -> String {
     "-".repeat(len)
 }
 
-// percent (for colors based on usage level)
 pub fn percent(value: f64) -> String {
     let text = format!("{}%", value as u32);
     if value > 80.0 {
@@ -34,12 +31,10 @@ pub fn battery_percent(value: u32) -> String {
     }
 }
 
-// info
 pub fn info(key: &str, value: &str) -> String {
     format!("{}: {}", key.yellow().bold(), value)
 }
 
-// color blocks
 pub fn color_blocks() -> String {
     let normal = "   ".on_black().to_string()
         + &"   ".on_red().to_string()
