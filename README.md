@@ -6,5 +6,5 @@ A simple system information tool written in Rust.
 | :---------------------: |
 
 ## Why should anyone use this?
-you shouldn't 😂; it's just a fun project I made to learn Rust.
+you shouldn't; it's just a fun project I made to learn Rust.
 
