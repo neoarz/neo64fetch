@@ -97,25 +97,14 @@ fn terminal_cell_metrics() -> (f32, f32) {
 //
 // Returns (column_offset, total_rows) for side-by-side text printing.
 // Returns (0, 0) on failure; unsupported terminal or image load error (skill issue)
-pub fn print_image_and_setup(path: &str, target_height: u32) -> (usize, usize) {
-    if !terminal_supports_kitty() {
-        return (0, 0);
-    }
-
-    // Load and proportionally resize to target height
-    let image = match image::open(Path::new(path)) {
-        Ok(img) => {
-            let ratio = target_height as f32 / img.height() as f32;
-            let w = ((img.width() as f32 * ratio).round().max(1.0)) as u32;
-            img.resize_exact(w, target_height, image::imageops::FilterType::Lanczos3)
-        }
-        Err(_) => return (0, 0),
-    };
+fn process_and_print_image(img: image::DynamicImage, target_height: u32) -> (usize, usize) {
+    let ratio = target_height as f32 / img.height() as f32;
+    let w = ((img.width() as f32 * ratio).round().max(1.0)) as u32;
+    let image = img.resize_exact(w, target_height, image::imageops::FilterType::Lanczos3);
 
     let (width, height) = image.dimensions();
 
     // Kitty protocol requires PNG format, even for JPEG/WebP sources
-    // See: https://github.com/Ly-sec/swiftfetch/blob/main/src/display.rs#L495-L501
     let mut png_bytes = Vec::new();
     if image
         .write_to(&mut Cursor::new(&mut png_bytes), ImageFormat::Png)
@@ -149,12 +138,10 @@ pub fn print_image_and_setup(path: &str, target_height: u32) -> (usize, usize) {
     }
 
     // Convert pixel dimensions to terminal columns/rows
-    // See: https://github.com/Ly-sec/swiftfetch/blob/main/src/display.rs#L503-L511
     let (char_w, char_h) = terminal_cell_metrics();
     let cols = ((width as f32 / char_w).ceil() as usize).max(1) + DEFAULT_GAP_COLUMNS;
     let rows = ((height as f32 / char_h).ceil() as usize).max(1);
     let padding_top = 0;
-    let caption_rows = 1;
     let total_rows = rows + padding_top;
 
     for _ in 0..total_rows {
@@ -162,8 +149,6 @@ pub fn print_image_and_setup(path: &str, target_height: u32) -> (usize, usize) {
     }
 
     // use cursor positioning to place image
-    // swiftfetch uses a different approach with save/restore but lowk didnt work for me
-    // https://github.com/Ly-sec/swiftfetch/blob/main/src/display.rs#L225-L253
     print!("\x1b[{}A", total_rows);
 
     if padding_top > 0 {
@@ -174,18 +159,6 @@ pub fn print_image_and_setup(path: &str, target_height: u32) -> (usize, usize) {
     print!("{}", output);
     std::io::stdout().flush().ok();
 
-    // just a silly caption lolol
-    let image_width_cols = cols - DEFAULT_GAP_COLUMNS;
-
-    let text = "a creeper made this";
-    let text_len = 16;
-    let pad = if image_width_cols > text_len {
-        (image_width_cols - text_len) / 2
-    } else {
-        0
-    };
-    print!("\x1b[{}B", rows);
-    print!("\r\x1b[{}C{}", pad, text);
 
     print!("\x1b[u");
 
@@ -194,7 +167,29 @@ pub fn print_image_and_setup(path: &str, target_height: u32) -> (usize, usize) {
     }
     std::io::stdout().flush().ok();
 
-    (cols, total_rows + caption_rows)
+    (cols, total_rows)
+}
+
+pub fn print_image_and_setup(path: &str, target_height: u32) -> (usize, usize) {
+    if !terminal_supports_kitty() {
+        return (0, 0);
+    }
+
+    match image::open(Path::new(path)) {
+        Ok(img) => process_and_print_image(img, target_height),
+        Err(_) => (0, 0),
+    }
+}
+
+pub fn print_image_from_memory(bytes: &[u8], target_height: u32) -> (usize, usize) {
+    if !terminal_supports_kitty() {
+        return (0, 0);
+    }
+
+    match image::load_from_memory(bytes) {
+        Ok(img) => process_and_print_image(img, target_height),
+        Err(_) => (0, 0),
+    }
 }
 
 // Prints text at a horizontal offset for side-by-side layout with image.

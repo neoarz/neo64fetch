@@ -8,6 +8,7 @@ mod output;
 
 use output::{colors, image};
 
+#[allow(dead_code)]
 struct Stats {
     // Neoarz[at]Mac
     username: String,
@@ -132,10 +133,24 @@ fn print_stats(stats: &Stats, offset: usize) {
     }
 }
 
+const LOGO_BYTES: &[u8] = include_bytes!("../assets/logo.png");
+
 fn main() {
     let stats = get_system_stats();
-    let (offset, img_rows) = image::print_image_and_setup("assets/logo.png", 700);
-    //                                                                       ^^^ size of the image change it here
+    
+    // Try to find the logo in the user's config directory
+    // Shouldve made it automake the directory, and tell user to add image there
+    // but oh well no one is using this anyways
+    let logo_path = std::env::var("HOME").map(|home| format!("{}/.config/neo64fetch/logo.png", home));
+
+    let (offset, img_rows) = if let Ok(path) = logo_path
+        && std::path::Path::new(&path).exists()
+    {
+         image::print_image_and_setup(&path, 700)
+    } else {
+        image::print_image_from_memory(LOGO_BYTES, 700)
+    };
+    
     print_stats(&stats, offset);
     image::finish_printing(offset, 24, img_rows);
 }

@@ -1,5 +1,6 @@
 // https://github.com/fastfetch-cli/fastfetch/blob/dev/src/detection/memory/memory_apple.c
 
+#[allow(deprecated)]
 use libc::{
     HOST_VM_INFO64, HOST_VM_INFO64_COUNT, host_statistics64, mach_host_self, vm_statistics64_data_t,
 };
@@ -39,6 +40,7 @@ pub fn get_memory_info() -> String {
         let mut vmstat: vm_statistics64_data_t = mem::zeroed(); // this this is unsafe we have to manually zero it
 
         if host_statistics64(
+            #[allow(deprecated)]
             mach_host_self(),
             HOST_VM_INFO64,
             &mut vmstat as *mut _ as *mut _,
