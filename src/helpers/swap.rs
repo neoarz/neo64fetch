@@ -12,13 +12,13 @@ pub fn get_swap_info() -> String {
         let mut used_mb = 0.0;
 
         for part in stdout.split_whitespace() {
-            if let Some(val) = part.strip_suffix('M') {
-                if let Ok(num) = val.parse::<f64>() {
-                    if stdout.contains(&format!("total = {}", part)) {
-                        total_mb = num;
-                    } else if stdout.contains(&format!("used = {}", part)) {
-                        used_mb = num;
-                    }
+            if let Some(val) = part.strip_suffix('M')
+                && let Ok(num) = val.parse::<f64>()
+            {
+                if stdout.contains(&format!("total = {}", part)) {
+                    total_mb = num;
+                } else if stdout.contains(&format!("used = {}", part)) {
+                    used_mb = num;
                 }
             }
         }
@@ -33,7 +33,9 @@ pub fn get_swap_info() -> String {
 
         return format!(
             "{:.2} GiB / {:.2} GiB ({})",
-            used_gib, total_gib, crate::output::colors::percent(percentage)
+            used_gib,
+            total_gib,
+            crate::output::colors::percent(percentage)
         );
     }
 

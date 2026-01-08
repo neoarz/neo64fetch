@@ -20,9 +20,7 @@ pub fn get_gpu_info() -> String {
                     .nth(1)
                     .unwrap_or("")
                     .trim()
-                    .replace('"', "")
-                    .replace('<', "")
-                    .replace('>', "");
+                    .replace(['"', '<', '>'], "");
             }
             if line.contains("\"gpu-core-count\"") {
                 cores = line.split('=').nth(1).unwrap_or("").trim().to_string();

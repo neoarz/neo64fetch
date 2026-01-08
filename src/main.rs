@@ -1,7 +1,6 @@
 // neoarz
 // neo64fetch - "jarvis, rewrite this project in rust"
 
-use std::env;
 use sysinfo::System;
 
 mod helpers;
@@ -40,7 +39,6 @@ struct Stats {
     // Extra fields
     architecture: String, // appended to os
 }
-
 
 fn get_system_stats() -> Stats {
     let mut sys = System::new_all();
@@ -82,7 +80,6 @@ fn get_system_stats() -> Stats {
     }
 }
 
-
 fn print_stats(stats: &Stats, offset: usize) {
     let mut lines = Vec::new();
 
@@ -90,10 +87,15 @@ fn print_stats(stats: &Stats, offset: usize) {
     lines.push(colors::title(&stats.username, &stats.hostname));
 
     // separator
-    lines.push(colors::separator(stats.username.len() + stats.hostname.len() + 1));
+    lines.push(colors::separator(
+        stats.username.len() + stats.hostname.len() + 1,
+    ));
 
     // info
-    lines.push(colors::info("OS", &format!("{} {}", stats.os, stats.architecture)));
+    lines.push(colors::info(
+        "OS",
+        &format!("{} {}", stats.os, stats.architecture),
+    ));
     lines.push(colors::info("Host", &stats.host));
     lines.push(colors::info("Kernel", &stats.kernel));
     lines.push(colors::info("Uptime", &stats.uptime));
@@ -113,7 +115,10 @@ fn print_stats(stats: &Stats, offset: usize) {
     lines.push(colors::info("Swap", &stats.swap));
     lines.push(colors::info("Disk (/)", &stats.storage));
     // lines.push(colors::info("Local IP", &stats.ip));
-    lines.push(colors::info(&format!("Battery {}", stats.battery.0), &stats.battery.1));
+    lines.push(colors::info(
+        &format!("Battery {}", stats.battery.0),
+        &stats.battery.1,
+    ));
     // lines.push(colors::info("Locale", &stats.locale));
 
     // color blocks
@@ -127,12 +132,10 @@ fn print_stats(stats: &Stats, offset: usize) {
     }
 }
 
-
-
 fn main() {
-    let stats = get_system_stats();                                                         
+    let stats = get_system_stats();
     let (offset, img_rows) = image::print_image_and_setup("assets/logo.png", 700);
-    //                                                                       ^^^ size of the image change it here                  
+    //                                                                       ^^^ size of the image change it here
     print_stats(&stats, offset);
     image::finish_printing(offset, 24, img_rows);
 }

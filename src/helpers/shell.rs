@@ -3,8 +3,9 @@ use std::process::Command;
 
 pub fn get_shell_info() -> String {
     let shell_path = env::var("SHELL").unwrap_or_else(|_| "unknown".to_string());
-    let shell_name = shell_path.split('/').last().unwrap_or("unknown");
-    let version = Command::new(&shell_path)
+    let shell_name = shell_path.split('/').next_back().unwrap_or("unknown");
+
+    Command::new(&shell_path)
         .arg("--version")
         .output()
         .map(|output| {
@@ -16,7 +17,5 @@ pub fn get_shell_info() -> String {
                 .collect::<Vec<_>>()
                 .join(" ")
         })
-        .unwrap_or_else(|_| shell_name.to_string());
-
-    version
+        .unwrap_or_else(|_| shell_name.to_string())
 }

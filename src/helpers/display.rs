@@ -18,10 +18,20 @@ pub fn get_display_info() -> String {
         };
 
         if display_count > 1 {
-            let name = if main.name.is_empty() { "Color LCD" } else { &main.name };
+            let name = if main.name.is_empty() {
+                "Color LCD"
+            } else {
+                &main.name
+            };
             format!(
                 "({}) {}x{} @ {}x in {}\", {} Hz {}",
-                name, p_width, p_height, main.scale_factor as u32, inches, main.frequency as u32, tag
+                name,
+                p_width,
+                p_height,
+                main.scale_factor as u32,
+                inches,
+                main.frequency as u32,
+                tag
             )
         } else {
             format!(

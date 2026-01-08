@@ -26,12 +26,11 @@ pub fn get_terminal_info() -> String {
 
     let my_pid = sysinfo::get_current_pid().unwrap_or(sysinfo::Pid::from(0));
 
-    if let Some(process) = sys.process(my_pid) {
-        if let Some(parent_pid) = process.parent() {
-            if let Some(parent_proc) = sys.process(parent_pid) {
-                return parent_proc.name().to_string_lossy().replace(".app", "");
-            }
-        }
+    if let Some(process) = sys.process(my_pid)
+        && let Some(parent_pid) = process.parent()
+        && let Some(parent_proc) = sys.process(parent_pid)
+    {
+        return parent_proc.name().to_string_lossy().replace(".app", "");
     }
 
     "unknown".to_string()

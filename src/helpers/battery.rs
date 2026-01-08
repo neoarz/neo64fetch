@@ -45,19 +45,19 @@ pub fn get_battery_info() -> (String, String) {
                 let value = value_part.trim_matches(';').trim();
                 is_charging = value == "Yes";
             }
-        } else if line.contains("\"AvgTimeToEmpty\"") {
-            if let Some(equals_pos) = line.find('=') {
-                let value_part = &line[equals_pos + 1..].trim();
-                let value = value_part.trim_matches(';').trim();
-                if let Ok(time) = value.parse::<i32>() {
-                    avg_time_to_empty = Some(time);
-                }
+        } else if line.contains("\"AvgTimeToEmpty\"")
+            && let Some(equals_pos) = line.find('=')
+        {
+            let value_part = &line[equals_pos + 1..].trim();
+            let value = value_part.trim_matches(';').trim();
+            if let Ok(time) = value.parse::<i32>() {
+                avg_time_to_empty = Some(time);
             }
         }
     }
 
     let percentage = if let Some(capacity) = current_capacity {
-        if capacity >= 0 && capacity <= 100 {
+        if (0..=100).contains(&capacity) {
             capacity as u32
         } else {
             return (format!("({})", device_name), "<unknown>".to_string());
@@ -76,20 +76,21 @@ pub fn get_battery_info() -> (String, String) {
 
     let mut result = crate::output::colors::battery_percent(percentage);
 
-    if !external_connected && !is_charging {
-        if let Some(time_mins) = avg_time_to_empty {
-            if time_mins > 0 && time_mins < 0xFFFF {
-                let hours = time_mins / 60;
-                let mins = time_mins % 60;
+    if !external_connected
+        && !is_charging
+        && let Some(time_mins) = avg_time_to_empty
+        && time_mins > 0
+        && time_mins < 0xFFFF
+    {
+        let hours = time_mins / 60;
+        let mins = time_mins % 60;
 
-                if hours > 0 && mins > 0 {
-                    result.push_str(&format!(" ({} hours, {} mins remaining)", hours, mins));
-                } else if hours > 0 {
-                    result.push_str(&format!(" ({} hours remaining)", hours));
-                } else if mins > 0 {
-                    result.push_str(&format!(" ({} mins remaining)", mins));
-                }
-            }
+        if hours > 0 && mins > 0 {
+            result.push_str(&format!(" ({} hours, {} mins remaining)", hours, mins));
+        } else if hours > 0 {
+            result.push_str(&format!(" ({} hours remaining)", hours));
+        } else if mins > 0 {
+            result.push_str(&format!(" ({} mins remaining)", mins));
         }
     }
 
@@ -97,4 +98,3 @@ pub fn get_battery_info() -> (String, String) {
 
     (format!("({})", device_name), result)
 }
-

@@ -1,6 +1,6 @@
 // https://github.com/fastfetch-cli/fastfetch/blob/dev/src/detection/disk/disk.c
 
-use libc::{c_int, c_char};
+use libc::{c_char, c_int};
 use std::ffi::CStr;
 
 #[repr(C)]
@@ -79,7 +79,9 @@ pub fn get_storage_info() -> String {
 
                 let mut result = format!(
                     "{:.2} GiB / {:.2} GiB ({})",
-                    used_gib, total_gib, crate::output::colors::percent(percentage)
+                    used_gib,
+                    total_gib,
+                    crate::output::colors::percent(percentage)
                 );
 
                 if !filesystem.is_empty() {
@@ -97,4 +99,3 @@ pub fn get_storage_info() -> String {
 
     "<unknown>".to_string()
 }
-

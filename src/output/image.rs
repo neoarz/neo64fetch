@@ -1,14 +1,14 @@
 // Kitty Graphics Protocol implementation for terminal image display
-// 
-// Inspired ~~stolen~~ by swiftfetch's implementation: 
+//
+// Inspired ~~stolen~~ by swiftfetch's implementation:
 // https://github.com/Ly-sec/swiftfetch/blob/main/src/display.rs
-// 
+//
 // Images are base64-encoded and chunked copying what swiftfetch does
 // Compatible terminals: Any terminals which use Kitty protocol, like Ghostty, Kitty, Wezterm
 
-use base64::{engine::general_purpose::STANDARD as BASE64, Engine};
+use base64::{Engine, engine::general_purpose::STANDARD as BASE64};
 use image::{GenericImageView, ImageFormat};
-use libc::{ioctl, winsize, STDOUT_FILENO, TIOCGWINSZ};
+use libc::{STDOUT_FILENO, TIOCGWINSZ, ioctl, winsize};
 use std::env;
 use std::io::{Cursor, Write};
 use std::mem;
@@ -27,11 +27,11 @@ const DEFAULT_GAP_COLUMNS: usize = 2;
 // See: https://github.com/Ly-sec/swiftfetch/blob/main/src/display.rs#L557
 const CHUNK_SIZE: usize = 4096;
 
-// Detects Kitty Graphics Protocol support via environment variables. 
-// 
+// Detects Kitty Graphics Protocol support via environment variables.
+//
 // See: https://github.com/Ly-sec/swiftfetch/blob/main/src/display.rs#L422-L460
-// 
-// Returns false for unsupported terminals 
+//
+// Returns false for unsupported terminals
 // Right now it just doenst print anything
 pub fn terminal_supports_kitty() -> bool {
     if matches!(
@@ -41,8 +41,12 @@ pub fn terminal_supports_kitty() -> bool {
         return true;
     }
 
-    if env::var("KITTY_WINDOW_ID").is_ok() { return true; }
-    if env::var("WEZTERM_PANE").is_ok() { return true; }
+    if env::var("KITTY_WINDOW_ID").is_ok() {
+        return true;
+    }
+    if env::var("WEZTERM_PANE").is_ok() {
+        return true;
+    }
 
     if let Ok(term_program) = env::var("TERM_PROGRAM") {
         let t = term_program.to_lowercase();
@@ -51,22 +55,26 @@ pub fn terminal_supports_kitty() -> bool {
         }
     }
 
-    if let Ok(term) = env::var("TERM") {
-        if term.to_lowercase().contains("kitty") { return true; }
+    if let Ok(term) = env::var("TERM")
+        && term.to_lowercase().contains("kitty")
+    {
+        return true;
     }
 
     false
 }
 
 // Queries terminal for character cell dimensions using ioctl(TIOCGWINSZ).
-// 
+//
 // See: https://github.com/Ly-sec/swiftfetch/blob/main/src/display.rs#L462-L477
 fn terminal_cell_metrics() -> (f32, f32) {
     unsafe {
         let mut ws: winsize = mem::zeroed();
-        if ioctl(STDOUT_FILENO, TIOCGWINSZ, &mut ws) == 0 
-            && ws.ws_col > 0 && ws.ws_row > 0 
-            && ws.ws_xpixel > 0 && ws.ws_ypixel > 0 
+        if ioctl(STDOUT_FILENO, TIOCGWINSZ, &mut ws) == 0
+            && ws.ws_col > 0
+            && ws.ws_row > 0
+            && ws.ws_xpixel > 0
+            && ws.ws_ypixel > 0
         {
             return (
                 ws.ws_xpixel as f32 / ws.ws_col as f32,
@@ -80,13 +88,13 @@ fn terminal_cell_metrics() -> (f32, f32) {
 // Loads, resizes, and displays an image via Kitty Graphics Protocol.
 // Loading Logic:
 // See: https://github.com/Ly-sec/swiftfetch/blob/main/src/display.rs#L479-L527
-// 
+//
 // Resize logic:
 // See: https://github.com/Ly-sec/swiftfetch/blob/main/src/display.rs#L530-L545
-// 
+//
 // Transmission logic:
 // See: https://github.com/Ly-sec/swiftfetch/blob/main/src/display.rs#L547-L578
-// 
+//
 // Returns (column_offset, total_rows) for side-by-side text printing.
 // Returns (0, 0) on failure; unsupported terminal or image load error (skill issue)
 pub fn print_image_and_setup(path: &str, target_height: u32) -> (usize, usize) {
@@ -109,7 +117,10 @@ pub fn print_image_and_setup(path: &str, target_height: u32) -> (usize, usize) {
     // Kitty protocol requires PNG format, even for JPEG/WebP sources
     // See: https://github.com/Ly-sec/swiftfetch/blob/main/src/display.rs#L495-L501
     let mut png_bytes = Vec::new();
-    if image.write_to(&mut Cursor::new(&mut png_bytes), ImageFormat::Png).is_err() {
+    if image
+        .write_to(&mut Cursor::new(&mut png_bytes), ImageFormat::Png)
+        .is_err()
+    {
         return (0, 0);
     }
 
@@ -124,7 +135,10 @@ pub fn print_image_and_setup(path: &str, target_height: u32) -> (usize, usize) {
         let more = if end < encoded.len() { 1 } else { 0 };
 
         if first {
-            output.push_str(&format!("\x1b_Ga=T,f=100,s={},v={},m={};", width, height, more));
+            output.push_str(&format!(
+                "\x1b_Ga=T,f=100,s={},v={},m={};",
+                width, height, more
+            ));
             first = false;
         } else {
             output.push_str(&format!("\x1b_Gm={};", more));
@@ -150,38 +164,42 @@ pub fn print_image_and_setup(path: &str, target_height: u32) -> (usize, usize) {
     // use cursor positioning to place image
     // swiftfetch uses a different approach with save/restore but lowk didnt work for me
     // https://github.com/Ly-sec/swiftfetch/blob/main/src/display.rs#L225-L253
-    print!("\x1b[{}A", total_rows);  
-    
+    print!("\x1b[{}A", total_rows);
+
     if padding_top > 0 {
-        print!("\x1b[{}B", padding_top); 
+        print!("\x1b[{}B", padding_top);
     }
-    
-    print!("\x1b[s"); 
-    print!("{}", output); 
+
+    print!("\x1b[s");
+    print!("{}", output);
     std::io::stdout().flush().ok();
 
     // just a silly caption lolol
     let image_width_cols = cols - DEFAULT_GAP_COLUMNS;
-    
+
     let text = "a creeper made this";
     let text_len = 16;
-    let pad = if image_width_cols > text_len { (image_width_cols - text_len) / 2 } else { 0 };
+    let pad = if image_width_cols > text_len {
+        (image_width_cols - text_len) / 2
+    } else {
+        0
+    };
     print!("\x1b[{}B", rows);
-    print!("\r\x1b[{}C{}", pad, text); 
+    print!("\r\x1b[{}C{}", pad, text);
 
-    print!("\x1b[u"); 
-    
+    print!("\x1b[u");
+
     if padding_top > 0 {
-        print!("\x1b[{}A", padding_top); 
+        print!("\x1b[{}A", padding_top);
     }
     std::io::stdout().flush().ok();
 
     (cols, total_rows + caption_rows)
 }
 
-// Prints text at a horizontal offset for side-by-side layout with image. 
-// 
-// swiftfetch uses space padding instead of cursor movement: 
+// Prints text at a horizontal offset for side-by-side layout with image.
+//
+// swiftfetch uses space padding instead of cursor movement:
 // See: https://github.com/Ly-sec/swiftfetch/blob/main/src/display.rs#L236-L245
 pub fn print_with_offset(offset: usize, text: &str) {
     if offset > 0 {
@@ -192,7 +210,7 @@ pub fn print_with_offset(offset: usize, text: &str) {
 }
 
 // Fills remaining vertical space if text is shorter than image height.
-// 
+//
 // Called after all info lines are printed to make sure the image is not cut off.
 // See: https://github.com/Ly-sec/swiftfetch/blob/main/src/display.rs#L338-L348
 pub fn finish_printing(offset: usize, lines_printed: usize, image_rows: usize) {
