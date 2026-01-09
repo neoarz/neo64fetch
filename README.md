@@ -8,7 +8,14 @@ A simple system information tool written in Rust for Apple Silicon Macs
 
 | ![neo64fetch Demo](/assets/demo.png) |
 | :---------------------: |
+| [Kitty Graphics Protocol](https://sw.kovidgoyal.net/kitty/graphics-protocol/) is used to display images |
 
-## Why should anyone use this?
-You shouldn't; it's just a fun project I made to learn Rust.
+## Why should anyone use this
+You shouldn't. It's just a fun project I made to learn Rust.
+
+## Credits
+- [Swiftfetch](https://github.com/Ly-sec/swiftfetch) for kitty graphics protocol implementation
+- [Fastfetch](https://github.com/fastfetch-cli/fastfetch) for understanding everything :D
+
+
 
