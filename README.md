@@ -4,14 +4,16 @@
 [![Sponsor Me](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/neoarz)
 
 
-A simple system information tool written in Rust for Apple Silicon Macs
+A simple system information tool for Apple Silicon Macs
 
 | ![neo64fetch Demo](/assets/demo.png) |
 | :---------------------: |
 | [Kitty Graphics Protocol](https://sw.kovidgoyal.net/kitty/graphics-protocol/) is used to display images |
 
 ## Why should anyone use this
-You shouldn't. It's just a fun project I made to learn Rust.
+You shouldn't. It's just a fun project I made to learn the most chad language.
+<br>
+<sub>Jarvis, rewrite this project in rust</sub>
 
 ## Credits
 - [Swiftfetch](https://github.com/Ly-sec/swiftfetch) for kitty graphics protocol implementation
